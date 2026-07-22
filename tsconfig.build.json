@@ -1,0 +1,27 @@
+{
+  // Builds the published library: src/ -> dist/, JS + .d.ts.
+  //
+  // Separate from tsconfig.json because that one is the dev harness's config —
+  // it type-checks app/ too and emits nothing. This one emits, and sees only
+  // src/, so nothing under app/ can accidentally end up in the package.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "incremental": false,
+    // Emit imports exactly as written. Every relative import in src/ carries an
+    // explicit .js extension so the output is valid Node ESM as well as
+    // bundler-resolvable — tsc does not rewrite specifiers, so writing them
+    // correctly in the source is the only way to get this right.
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "plugins": []
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist", ".next", "app", "cli"]
+}

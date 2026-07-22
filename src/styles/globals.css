@@ -1,0 +1,125 @@
+/* nextjs-mcp-kit — base styles and theme tokens.
+ *
+ * Import once, in your root layout:
+ *   import 'nextjs-mcp-kit/styles.css';
+ *
+ * Everything the components draw comes from the --mcp-* custom properties
+ * below. They are plain CSS variables with no build step, so a consuming app
+ * overrides any of them by redeclaring it under :root after this import —
+ * that is the whole theming story, and it is why the components use
+ * var(--mcp-…) instead of literal colours.
+ *
+ * The components previously hardcoded a light palette (#fafafa thread, #111
+ * text) alongside a dark one (#0f0f16 inputs). On a dark-mode machine the chat
+ * rendered dark text on a dark background, which is the first thing anyone
+ * installing this would have seen.
+ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Surfaces */
+  --mcp-fg: #171717;
+  --mcp-muted: #5c5c5c;
+  --mcp-panel: #ffffff;
+  --mcp-thread: #fafafa;
+  --mcp-input-bg: #ffffff;
+  --mcp-border: #dddddd;
+
+  /* Message bubbles */
+  --mcp-bubble-user: #d6e4ff;
+  --mcp-bubble-assistant: #ffffff;
+
+  /* Status */
+  --mcp-danger: #b02020;
+  --mcp-billed-bg: #fff7e0;
+  --mcp-billed-fg: #8a5a00;
+  --mcp-billed-border: #f59e0b;
+  --mcp-local-bg: #e7f8f1;
+  --mcp-local-fg: #0b6b4f;
+  --mcp-local-border: #22aa77;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    --mcp-fg: #ededed;
+    --mcp-muted: #9b9b9b;
+    --mcp-panel: #141418;
+    --mcp-thread: #101014;
+    --mcp-input-bg: #0f0f16;
+    --mcp-border: #2e2e38;
+
+    --mcp-bubble-user: #1e3a5f;
+    --mcp-bubble-assistant: #1a1a20;
+
+    --mcp-danger: #ff6b6b;
+    --mcp-billed-bg: #3a2f10;
+    --mcp-billed-fg: #fcd34d;
+    --mcp-billed-border: #f59e0b;
+    --mcp-local-bg: #0f2a22;
+    --mcp-local-fg: #6ee7b7;
+    --mcp-local-border: #22aa77;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Form controls inherit the theme rather than the browser's default palette —
+ * without this a <select> stays white-on-white in dark mode. */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  color: var(--mcp-fg);
+  background: var(--mcp-input-bg);
+  border: 1px solid var(--mcp-border);
+  border-radius: 4px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

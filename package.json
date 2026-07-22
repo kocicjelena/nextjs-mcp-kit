@@ -1,0 +1,146 @@
+{
+  "name": "nextjs-mcp-kit",
+  "version": "0.1.0",
+  "author": "Jelena Kocic",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jelenakocic/nextjs-mcp-kit.git"
+  },
+  "description": "A Next.js App Router MCP server, MCP client and provider-agnostic chat UI \u2014 drop-in routes, components and a pluggable provider seam for Claude and Ollama.",
+  "keywords": [
+    "nextjs",
+    "next",
+    "app-router",
+    "mcp",
+    "model-context-protocol",
+    "chat",
+    "chat-ui",
+    "anthropic",
+    "claude",
+    "ollama",
+    "llm"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "bin": {
+    "nextjs-mcp-kit": "./cli/index.js"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "cli",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./context": {
+      "types": "./dist/context/GlobalContext.d.ts",
+      "default": "./dist/context/GlobalContext.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "default": "./dist/components/index.js"
+    },
+    "./pages": {
+      "types": "./dist/views/index.d.ts",
+      "default": "./dist/views/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "default": "./dist/providers/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/prompts.d.ts",
+      "default": "./dist/mcp/prompts.js"
+    },
+    "./store": {
+      "types": "./dist/store/instructions.d.ts",
+      "default": "./dist/store/instructions.js"
+    },
+    "./api/chat": {
+      "types": "./dist/api/chat.d.ts",
+      "default": "./dist/api/chat.js"
+    },
+    "./api/providers": {
+      "types": "./dist/api/providers.d.ts",
+      "default": "./dist/api/providers.js"
+    },
+    "./api/instructions": {
+      "types": "./dist/api/instructions.d.ts",
+      "default": "./dist/api/instructions.js"
+    },
+    "./api/mcpserver": {
+      "types": "./dist/api/mcpserver.d.ts",
+      "default": "./dist/api/mcpserver.js"
+    },
+    "./api/mcpserver-prompts": {
+      "types": "./dist/api/mcpserver-prompts.d.ts",
+      "default": "./dist/api/mcpserver-prompts.js"
+    },
+    "./api/mcpclient-prompt": {
+      "types": "./dist/api/mcpclient-prompt.d.ts",
+      "default": "./dist/api/mcpclient-prompt.js"
+    },
+    "./styles.css": "./dist/styles/globals.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "predev": "npm run build:lib",
+    "dev:lib": "tsc -p tsconfig.build.json --watch",
+    "start": "next start",
+    "prebuild": "npm run build:lib",
+    "build": "next build",
+    "build:lib": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "clean": "rm -rf dist .next tsconfig.tsbuildinfo",
+    "verify": "npm run build:lib && npm run typecheck && npm run lint && npm run build",
+    "prepublishOnly": "npm run clean && npm run verify"
+  },
+  "peerDependencies": {
+    "next": ">=15.0.0",
+    "react": ">=18.3.0",
+    "react-dom": ">=18.3.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2",
+    "@modelcontextprotocol/client": "^2.0.0-beta.3",
+    "@modelcontextprotocol/server": "^2.0.0-beta.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.11",
+    "next": "^16.2.11",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "typescript": "^5"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true,
+    "es5-ext@0.10.64": true
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "nextjs-mcp-kit-local": {
+      "type": "http",
+      "url": "http://localhost:3000/api/mcpserver/mcp"
+    },
+    "nextjs-mcp-kit-external": {
+      "type": "http",
+      "url": "https://PUBLIC_HOST/api/mcpserver/mcp"
+    }
+  }
+}
