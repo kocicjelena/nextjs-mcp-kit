@@ -9,12 +9,66 @@ non-negotiables, and `docs/PUBLISH.md` for shipping.
 
 ## Where this stands
 
-The package is **ready to publish and has not been published yet.** It is
-`nextjs-mcp-kit` on npm (`nextjs-mcp` was taken by another maintainer).
+**`nextjs-mcp-kit@0.1.0` is published.**
+<https://www.npmjs.com/package/nextjs-mcp-kit> — built by GitHub Actions,
+carrying a signed provenance attestation back to commit `0ba6028`.
 
-Everything below was verified on 2026-07-22 against a live Ollama.
+Repository: <https://github.com/kocicjelena/nextjs-mcp-kit>
 
-### This session: restructured for npm, and fixed a dead headline route
+| | |
+|---|---|
+| npm `latest` | `0.1.0` |
+| npm `next` | `0.1.0-rc.0` — the manual bootstrap publish, now stale |
+| CI | `.github/workflows/ci.yml`, green on Node 20.9 and 24 |
+| Release | `.github/workflows/publish.yml`, OIDC trusted publishing, no token |
+
+**To cut the next release, follow `docs/PUBLISH.md` §A.** It is a
+step-by-step runbook and it is the only thing you need for a routine release.
+
+### Session of 2026-07-22 (second): shipped it
+
+The `.github/` directory was lost when the project was copied into a new
+directory, so neither workflow existed despite an earlier commit claiming
+them. Both were rewritten, and `0.1.0` went out through CI.
+
+Two bugs were fixed in the drafted workflow before it ever ran:
+
+- **`id-token: write` does not enable provenance.** It grants the permission
+  only. A bare `npm publish` would have succeeded with no attestation and no
+  warning. The `--provenance` flag is explicit for this reason.
+- **Nothing checked the release tag against `package.json`.** Tagging without
+  bumping republishes the old version and fails *after* the release exists. A
+  guard step now fails earlier, with a legible message.
+
+Also corrected: `package.json` `repository` pointed at `github.com/jelenakocic`,
+a **different existing account**, not `kocicjelena`. `LICENSE` still said
+`Copyright (c) 2026 <YOUR NAME>`.
+
+The publish then failed three times with `E404` on `PUT`. Cause: the trusted
+publisher was never saved on npmjs.com — its form has no save button of its own
+and is committed by "Update Package Settings" at the page bottom. **npm returns
+`404` where other APIs return `403`**, so a publish 404 means *not authorized*,
+never *missing*. This is written up in `docs/PUBLISH.md` §5b.
+
+### Outstanding cleanup — do these first next session
+
+- [ ] **Revoke the granular npm token** — <https://www.npmjs.com/settings/kocicjelena/tokens>.
+      The `NPM_TOKEN` repo secret is already deleted, and the workflow never
+      referenced it. The token itself is still live and can still publish.
+- [ ] **Then** set npm publishing access to **"Require two-factor
+      authentication and disallow tokens"**. Only safe after the step above;
+      trusted publishing keeps working regardless.
+- [ ] **Drop the stale `next` dist-tag:** `npm dist-tag rm nextjs-mcp-kit next`
+      — it still points at `0.1.0-rc.0`, so `npm i nextjs-mcp-kit@next` gives
+      people an *older* build than `latest`.
+- [ ] **Decide on the `ci` required status check.** It was removed from the
+      ruleset to unblock the docs push. Re-adding it blocks *direct* pushes to
+      `main` (the check cannot have run on an unpushed commit) — so re-add it
+      only alongside a PR-based workflow. Require the **`ci`** job, never
+      `verify (24)`: matrix leg names change whenever the matrix does, and the
+      `ci` job exists solely to give branch protection one stable name.
+
+### Session of 2026-07-22 (first): restructured for npm, fixed a dead headline route
 
 The previous version could not have been published. `/` — the MCP prompt chat,
 the thing the package is named for — was broken two independent ways, and the
@@ -77,20 +131,12 @@ Test data written during verification was deleted; `.data/` does not exist.
 
 ## Do this next
 
-### 1. Publish (nothing blocks it)
+### 1. The cleanup checklist above
 
-Follow `docs/PUBLISH.md`. Three things need **your** input before the first
-push and I deliberately did not guess them:
+Four small items, listed under "Outstanding cleanup". The token revocation is
+the only one with a security edge; the rest are tidying.
 
-- `package.json` has no `author`, `repository`, `homepage` or `bugs`.
-- `LICENSE` says `Copyright (c) 2026 <YOUR NAME>`.
-- This is **not a git repository** (`git init` has never been run here). Do that
-  before adding a `repository` field pointing at GitHub.
-
-Also confirm `nextjs-mcp-kit` is still unclaimed immediately before publishing —
-unscoped names are first-come.
-
-### 2. Open question left from the previous session
+### 2. Open question, still unanswered
 
 **Ollama has no meaningful default model.** `ollamaProvider.defaultModel` is
 deliberately `''` — guessing a tag the user has not pulled just 404s at send
@@ -168,9 +214,15 @@ Design notes before writing any of it:
 
 ## Also outstanding
 
+- **Claude is still unverified against the live API.** No `ANTHROPIC_API_KEY`
+  has ever been available here. The unavailable path is tested (503 + reason);
+  the first real Claude turn is not. `0.1.0` shipped saying so. **This is the
+  single highest-value thing to close** — it is the one claim the package makes
+  that nobody has checked.
 - **No tests.** Verification is `npm run verify` plus the manual clean-room
   install in `docs/PUBLISH.md` §4. The highest-value first test is the
-  catalogue-vs-served-prompts assertion — that is the bug that shipped.
+  catalogue-vs-served-prompts assertion — that is the bug that shipped. Now
+  that CI exists, a test file would actually run on every push.
 - **No streaming.** Responses arrive whole. Streaming would change the
   `/api/chat` response shape, so decide it before 1.0.
 - **`@anthropic-ai/sdk` is a hard dependency**, so Ollama-only consumers still

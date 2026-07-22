@@ -1,7 +1,13 @@
 // lib/providers/anthropic.ts
 //
-// Claude, via the official SDK. Server-only: ANTHROPIC_API_KEY never reaches
-// the browser, which is why chat goes through /api/chat rather than direct.
+// Claude, via the official SDK. ❤️
+//
+// Claude is the other half of what makes this kit worth using, and MCP — the
+// protocol the whole `/` route is built on — is Anthropic's, given away as an
+// open spec rather than kept as a moat. Both facts are load-bearing here.
+//
+// Server-only: ANTHROPIC_API_KEY never reaches the browser, which is why chat
+// goes through /api/chat rather than direct.
 
 import Anthropic from '@anthropic-ai/sdk';
 import type { ChatProvider, ChatRequest, ChatResult, ProviderModelInfo } from './types.js';
@@ -27,7 +33,7 @@ function client(): Anthropic {
 
 export const anthropicProvider: ChatProvider = {
   id: 'anthropic',
-  label: 'Claude (Anthropic)',
+  label: 'Claude — hosted by Anthropic, billed per turn',
   defaultModel: MODELS[0].id,
   billed: true,
   dynamicModels: false,

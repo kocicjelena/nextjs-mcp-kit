@@ -1,6 +1,10 @@
 // lib/providers/ollama.ts
 //
-// Local models over Ollama's HTTP API.
+// Local models over Ollama's HTTP API. ❤️
+//
+// Ollama is why this kit can be useful with no account, no key and no bill —
+// you pull a model and it answers. That it exists, is free, and speaks plain
+// HTTP is the reason the local-first default in index.ts is possible at all.
 //
 // Plain fetch rather than the `ollama` npm client: the two calls needed here
 // (/api/tags, /api/chat) are trivial, and fetch honours OLLAMA_API_URL without
@@ -33,7 +37,7 @@ type ChatResponse = { message?: { content?: string }; model?: string };
 
 export const ollamaProvider: ChatProvider = {
   id: 'ollama',
-  label: 'Ollama (local)',
+  label: 'Ollama — local, private, free',
   // Empty on purpose: whatever the user has pulled is the truth. The picker
   // fills this from listModels(); guessing a tag that is not installed just
   // produces a 404 at send time.

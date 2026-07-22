@@ -286,6 +286,26 @@ pointing a client at `/api/mcpserver` alone will not connect.
 Next.js ≥ 15 (App Router), React ≥ 18.3, Node ≥ 20.9. Tested against Next 16.2
 and React 19.2.
 
+---
+
+## Thanks ❤️
+
+This kit is a thin thing sitting on top of other people's substantial work.
+
+**[Ollama](https://ollama.com)** ❤️ — for making local models genuinely easy.
+No account, no key, no bill: pull a model and it answers. That is the entire
+reason `nextjs-mcp-kit` can be useful the moment you install it, and why the
+default provider is the local one.
+
+**[Claude](https://claude.com/claude) and [Anthropic](https://anthropic.com)** ❤️
+— for the models, and for the **[Model Context Protocol](https://modelcontextprotocol.io)**.
+MCP is the thing the `/` route is built on, and it was given away as an open
+spec rather than kept as a moat. This package would not exist in this shape
+without it.
+
+Both providers are first-class here on purpose. One is local and free, one is
+hosted and excellent, and the provider seam exists so neither has to win.
+
 ## License
 
 MIT
