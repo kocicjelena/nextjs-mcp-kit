@@ -33,7 +33,7 @@ function client(): Anthropic {
 
 export const anthropicProvider: ChatProvider = {
   id: 'anthropic',
-  label: 'Claude — hosted by Anthropic, billed per turn',
+  label: 'Claude — hosted by Anthropic, billed per turn ❤️',
   defaultModel: MODELS[0].id,
   billed: true,
   dynamicModels: false,

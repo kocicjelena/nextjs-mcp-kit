@@ -37,7 +37,7 @@ type ChatResponse = { message?: { content?: string }; model?: string };
 
 export const ollamaProvider: ChatProvider = {
   id: 'ollama',
-  label: 'Ollama — local, private, free',
+  label: 'Ollama — local, private, free ❤️',
   // Empty on purpose: whatever the user has pulled is the truth. The picker
   // fills this from listModels(); guessing a tag that is not installed just
   // produces a 404 at send time.

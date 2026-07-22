@@ -44,6 +44,14 @@ Also corrected: `package.json` `repository` pointed at `github.com/jelenakocic`,
 a **different existing account**, not `kocicjelena`. `LICENSE` still said
 `Copyright (c) 2026 <YOUR NAME>`.
 
+**Credit where it is due.** Both providers now carry a ❤️ in their picker label
+and a note in their file header explaining why they are here — Ollama for making
+local models work with no account, no key and no bill, Claude and Anthropic for
+the models and for MCP being an open spec. `README.md` has a "Thanks" section
+saying the same at length. No `ChatProvider` field was added for this: a `note`
+nothing renders would be exactly the dead abstraction `CLAUDE.md` #2 forbids, so
+the text lives in the existing `label` and in comments.
+
 The publish then failed three times with `E404` on `PUT`. Cause: the trusted
 publisher was never saved on npmjs.com — its form has no save button of its own
 and is committed by "Update Package Settings" at the page bottom. **npm returns
@@ -67,6 +75,22 @@ never *missing*. This is written up in `docs/PUBLISH.md` §5b.
       only alongside a PR-based workflow. Require the **`ci`** job, never
       `verify (24)`: matrix leg names change whenever the matrix does, and the
       `ci` job exists solely to give branch protection one stable name.
+- [ ] **Exercise Claude against the live API.** Never done — see "Also
+      outstanding" below. Needs a key in `.env.local`, then one real turn on
+      `/chat`. This is the highest-value item on the list.
+
+### How to push, and how to release
+
+Both are written out step by step:
+
+- **Releases** → `docs/PUBLISH.md` §A. Never run `npm publish` by hand; there is
+  no token on the machine on purpose, and a manual publish would have no
+  provenance.
+- **Pushing** → direct pushes to `main` work today. If one is rejected with
+  `GH013`, the `ci` required check has been re-enabled; see the item above.
+- `docs/TODO.md` holds the same two runbooks in short form, but it is
+  **gitignored** — personal notes only, and it will not survive a fresh clone.
+  Treat `PUBLISH.md` and `CONTINUE.md` as authoritative.
 
 ### Session of 2026-07-22 (first): restructured for npm, fixed a dead headline route
 
