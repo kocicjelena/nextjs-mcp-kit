@@ -1,0 +1,62 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  # Required for Trusted Publishing (OIDC) and for provenance attestation.
+  # Without it npm cannot mint the identity token and the publish fails.
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # Names the npmjs.com deployment so the release shows where it went.
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/nextjs-mcp-kit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          # Writes the .npmrc that points publish at the public registry.
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      # Trusted Publishing needs npm >= 11.5.1. Node 24 already ships an
+      # 11.x, but pinning the floor here means a future runner image that
+      # moves npm backwards cannot silently break the OIDC exchange.
+      - name: Ensure npm supports trusted publishing
+        run: |
+          npm i -g npm@latest
+          npm --version
+
+      - run: npm ci
+
+      # The footgun this guards: tagging v0.2.0 without bumping package.json
+      # republishes 0.1.0, which npm rejects *after* the release already exists.
+      # Fail here instead, where the message is legible.
+      - name: Verify tag matches package version
+        run: |
+          PKG_VERSION="$(node -p 'require("./package.json").version')"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "package.json: $PKG_VERSION"
+          echo "release tag:  $TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not match package.json version '$PKG_VERSION'. Bump the version, commit, then re-tag."
+            exit 1
+          fi
+
+      # `prepublishOnly` (clean -> build:lib -> typecheck -> lint -> build)
+      # runs as part of this command, so the tarball is always built from a
+      # clean tree. That is why verify is not a separate step here.
+      #
+      # --provenance is explicit on purpose: id-token: write only grants the
+      # permission, it does not turn provenance on. A bare `npm publish`
+      # succeeds with no attestation and no warning.
+      - name: Publish
+        run: npm publish --provenance --access public

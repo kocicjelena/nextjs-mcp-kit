@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push to the same branch makes the first run irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 20.9 is the floor declared in `engines`; 24 is what releases are cut on.
+        # Quoted: unquoted YAML reads these as floats, and a future '20.10'
+        # would silently become 20.1.
+        node-version: ['20.9', '24']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm ci
+
+      # build:lib -> typecheck -> lint -> build. Needs no env vars: every
+      # provider's isAvailable() treats a missing key as a normal state.
+      - run: npm run verify
+
+  # A matrix reports one check per leg ("verify (20.9)", "verify (24)"), so the
+  # names change whenever the matrix does. Branch protection requires this single
+  # job instead — one stable name that stays correct as the matrix grows.
+  ci:
+    if: always()
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check matrix result
+        # Without this, a skipped or cancelled `verify` would report success.
+        run: |
+          echo "verify result: ${{ needs.verify.result }}"
+          [ "${{ needs.verify.result }}" = "success" ] || exit 1
