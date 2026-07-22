@@ -4,7 +4,11 @@
   "author": "Jelena Kocic",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jelenakocic/nextjs-mcp-kit.git"
+    "url": "git+https://github.com/kocicjelena/nextjs-mcp-kit.git"
+  },
+  "homepage": "https://github.com/kocicjelena/nextjs-mcp-kit#readme",
+  "bugs": {
+    "url": "https://github.com/kocicjelena/nextjs-mcp-kit/issues"
   },
   "description": "A Next.js App Router MCP server, MCP client and provider-agnostic chat UI \u2014 drop-in routes, components and a pluggable provider seam for Claude and Ollama.",
   "keywords": [
