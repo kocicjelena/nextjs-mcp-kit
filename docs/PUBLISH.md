@@ -390,3 +390,60 @@ npm deprecate nextjs-mcp-kit@0.1.0 "Broken MCP route; use 0.1.1"
 - `@anthropic-ai/sdk` is a hard dependency, so Ollama-only consumers still
   install it. Making it optional means a dynamic `import()` inside
   `providers/anthropic.ts`; it was left simple on purpose.
+
+---
+
+## Release log
+
+### 0.2.0 — 2026-07-23
+
+**What changed for consumers**
+
+- **`peerDependencies.next` narrowed `>=15.0.0` → `>=16.0.0`.** 16 is the only
+  major built and tested against. Next 15 consumers now get a peer conflict —
+  the intended signal. This consumer-felt change is why it is a **minor**, not a
+  patch (0.2.0, not 0.1.1).
+- **The ❤️ provider labels ship at last.** They were committed on `main` after
+  `0.1.0` but never released; `0.1.0` still served `Ollama (local)` /
+  `Claude (Anthropic)`. `0.2.0` is the first build carrying the hearts.
+- **README documents the `AgentChat` import trap** — the #1 consumer report:
+  `import { AgentChat } from 'nextjs-mcp-kit'` fails (`[app-rsc]`); it lives at
+  `nextjs-mcp-kit/components`. Added in the **Install** section where it bites,
+  plus the `moduleResolution: "bundler"` requirement and the Next 16 note.
+- **Claude is now verified against the live API.** This supersedes the "Claude
+  has never been exercised" limitation above: a real turn through
+  `/api/chat` with `provider: "anthropic"` returned a genuine response,
+  `billed: true`. Done with a key in `.env.local` (gitignored, never in the
+  tarball — `files` is `dist, cli, README.md, LICENSE`).
+
+**How this release was assembled** (the peer pin and README lived on the
+`examples` branch, kept off `main`; only the two package-affecting files were
+brought over — `example/` itself does not ship and stays on that branch):
+
+1. `git checkout examples -- package.json README.md` onto `main`.
+2. Repointed the README `example/` link to the `examples` branch and fixed the
+   stale "Next.js ≥ 15" in the Requirements section.
+3. `npm run verify` — green (build:lib → typecheck → lint → build, 10 routes).
+4. `npm pack --dry-run` — **141 files / 195 kB**, top level `dist cli README.md
+   LICENSE package.json` only; no `src/app/example/docs/node_modules` leak.
+5. **Reverted a stray `isAvailable()` regression** in
+   `src/providers/anthropic.ts` — a `` `${process.env.ANTHROPIC_API_KEY}` ``
+   template literal that made an *unset* key read as `"undefined"` (truthy), so
+   the provider would falsely report "available" and fail at Send instead of up
+   front. It only escaped notice because the live test ran *with* a key set.
+6. `git commit` the peer pin + README, then `npm version minor` → commit `0.2.0`
+   + tag `v0.2.0` (atomic — the workflow refuses to publish if tag and
+   `package.json` disagree).
+
+**Remaining steps to actually publish** (§A, from `git push` onward):
+
+7. `git push --follow-tags` — sends the commits **and** the `v0.2.0` tag.
+8. Create the GitHub Release for `v0.2.0` (release type **None**, not
+   pre-release). That fires `publish.yml`, which builds from the tagged commit
+   and publishes with provenance via OIDC. **No token, never a hand `npm
+   publish`.**
+9. Verify: `npm view nextjs-mcp-kit dist-tags` shows `latest: 0.2.0`; confirm
+   provenance (commands in §6).
+10. Post-release cleanup still outstanding from `0.1.0` (see `CONTINUE.md`):
+    revoke the granular npm token, then drop the stale `next` dist-tag
+    (`npm dist-tag rm nextjs-mcp-kit next`).
