@@ -17,6 +17,12 @@ provider is one file and one array entry.
 
 ## Install
 
+**Requires Next.js 16+ and Node 20.9+.** The peer range is `>=16.0.0` rather
+than `>=15.0.0` deliberately: 16 is the only major this is built and tested
+against, and a peer range should describe what has actually been verified, not
+what might happen to work. On Next 15 `npm i` will report a peer conflict —
+that is the intended signal, not a bug.
+
 ### Into an existing Next.js app
 
 ```bash
@@ -44,6 +50,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 Then `cp env.local.example .env.local` and `npm run dev`.
+
+#### Importing a component: the one thing that trips people up
+
+**Components are not exported from the package root.** This fails:
+
+```tsx
+import { AgentChat } from 'nextjs-mcp-kit';
+// The export AgentChat was not found in module .../dist/index.js [app-rsc]
+// Did you mean to import initialAgent?
+```
+
+This works:
+
+```tsx
+import { AgentChat } from 'nextjs-mcp-kit/components';
+```
+
+The root entry is server-safe on purpose — see [Exports](#exports). Rule of
+thumb: **if it renders, it is not at the root.**
+
+Fixing the import is necessary but not sufficient: `AgentChat` needs
+`/api/providers`, `/api/chat` and `/api/instructions` to exist in your app, and
+`GlobalProvider` above it. `npx nextjs-mcp-kit init` writes the routes; the
+layout is yours. A complete worked app — plus a troubleshooting list in the
+order things actually break — is in [`example/`](https://github.com/kocicjelena/nextjs-mcp-kit/tree/main/example).
 
 ### Standalone, from an empty directory
 
@@ -185,7 +216,13 @@ both dropdowns with **zero** client-side edits.
 | `nextjs-mcp-kit/styles.css` | theme tokens |
 
 The React pieces live behind their own subpaths so importing them cannot drag
-Node built-ins — or `ANTHROPIC_API_KEY` — into a client bundle.
+Node built-ins — or `ANTHROPIC_API_KEY` — into a client bundle. **If it renders,
+it is not at the root.**
+
+Subpaths are resolved through the `exports` map in `package.json`, which needs
+`"moduleResolution": "bundler"` in your `tsconfig.json`. `create-next-app` sets
+that already; on the legacy `"node"` setting every subpath fails to resolve with
+`Cannot find module 'nextjs-mcp-kit/components'`.
 
 ---
 

@@ -32,5 +32,10 @@
   ],
   // dist/ is build output — type-checking it would double-report every error in
   // src/ and fail on the emitted .d.ts files.
-  "exclude": ["node_modules", "dist", "cli"]
+  //
+  // example/ is a separate app with its own package.json, tsconfig and
+  // node_modules. It imports the package by NAME ('nextjs-mcp-kit/components'),
+  // which cannot resolve from inside the package's own tree — that is the point
+  // of it, and why it must be checked from its own root, not this one.
+  "exclude": ["node_modules", "dist", "cli", "example"]
 }

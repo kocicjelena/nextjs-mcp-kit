@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     // machine-generated JS, where the react-hooks rules misfire on the compiled
     // shape of code that is correct in the source.
     "dist/**",
+    // A separate consumer app with its own package.json and node_modules. It
+    // resolves 'nextjs-mcp-kit' from the registry, which this tree cannot do.
+    "example/**",
   ]),
 ]);
 

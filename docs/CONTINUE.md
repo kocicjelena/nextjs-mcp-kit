@@ -58,6 +58,74 @@ and is committed by "Update Package Settings" at the page bottom. **npm returns
 `404` where other APIs return `403`**, so a publish 404 means *not authorized*,
 never *missing*. This is written up in `docs/PUBLISH.md` §5b.
 
+### Session of 2026-07-23: the first real consumer report, and `example/`
+
+Installing the published package into a fresh `create-next-app` produced:
+
+```
+import { AgentChat } from 'nextjs-mcp-kit';
+The export AgentChat was not found in module .../dist/index.js [app-rsc]
+Did you mean to import initialAgent?
+```
+
+The error is correct — `AgentChat` is at `nextjs-mcp-kit/components`, and the
+root entry is server-safe on purpose. **Nothing was wrong with the package.**
+What was wrong is that the only place the split was documented was the Exports
+table, two-thirds of the way down `README.md`, and the bundler cannot suggest a
+subpath it was never asked about. The seam is right; its discoverability was not.
+
+`example/` is the answer: a complete, separately-installed consumer app that
+builds against the **published** package, not `dist/`. It covers the failing
+import beside the working one, all six route handlers, `GlobalProvider` in the
+layout, and a hand-rolled page proving `AgentChat` is a convenience rather than
+the API. Its README lists the failure modes in the order they actually bite.
+
+The second half of the report matters as much as the first: **fixing the import
+is necessary but not sufficient.** `AgentChat` calls `loadInstructions()` on
+mount and `sendChat()` on Send, so it needs `/api/providers`, `/api/chat` *and*
+`/api/instructions` to exist. Without `GlobalProvider` nothing throws at all —
+the actions default to `noop`, so Send is silently inert. That is the worst
+failure mode in the kit and it is now documented as such.
+
+`README.md` gained the trap in the **Install** section, where it is hit, plus
+the `moduleResolution: "bundler"` requirement — subpaths resolve through the
+`exports` map, and the legacy `"node"` setting cannot read it.
+
+`example/` is excluded from the root `tsconfig.json` and `eslint.config.mjs`: it
+imports the package by name, which cannot resolve from inside the package's own
+tree. That is the point of it. It has its own `package.json`, so it never enters
+the tarball (`files` already limits that).
+
+Verified: `npm install && npm run build` in `example/` against `0.1.0`, all ten
+routes emitted, then `next start` with `/`, `/custom`, `/mcp`,
+`/api/providers` and `/api/mcpserver/prompts` (5 prompts) all answering. Root
+`npm run verify` still green.
+
+One thing this surfaced: the published `0.1.0` still serves the **old** labels
+(`Ollama (local)`, `Claude (Anthropic)`). The hearts and the longer labels are
+committed on `main` but unreleased — they ship with the next version.
+
+**Peer range narrowed to Next 16.** `peerDependencies.next` went from
+`>=15.0.0` to `>=16.0.0`. Nothing was ever built or tested against 15, and a
+peer range should describe what has been verified rather than what might happen
+to work. `react`/`react-dom` stay at `>=18.3.0` — Next 16 declares
+`^18.2.0 || ^19.0.0` itself, so tightening those would be stricter than Next.
+
+This narrows what installs cleanly, so **it wants a minor bump, not a patch**:
+`0.2.0`, not `0.1.1`. In 0.x a minor is the conventional place for a change a
+consumer can feel, and a Next-15 user will feel this one as a peer conflict.
+
+**A hydration error was reported but could not be reproduced.** The example was
+loaded in headless Chrome on Next 16.2.11 with the console captured — `/`,
+`/custom` and `/mcp` all hydrated clean, no hydration warning and no Suspense
+error, with client-fetched content (provider options, MCP prompt list) present
+in the DOM, which only happens after effects run. Nothing in `src/` reads
+`useSearchParams`, `localStorage`, `Date.now()` or `Math.random()` during
+render, which is where these normally come from; the `window` access in
+`mcp/client.ts` is guarded and the timestamps in `store/instructions.ts` are
+server-only. If it resurfaces, the missing evidence is the **exact** error text
+and which route — this was tested blind and found nothing.
+
 ### Outstanding cleanup — do these first next session
 
 - [ ] **Revoke the granular npm token** — <https://www.npmjs.com/settings/kocicjelena/tokens>.
@@ -248,13 +316,22 @@ Design notes before writing any of it:
   catalogue-vs-served-prompts assertion — that is the bug that shipped. Now
   that CI exists, a test file would actually run on every push.
 - **No streaming.** Responses arrive whole. Streaming would change the
-  `/api/chat` response shape, so decide it before 1.0.
+  `/api/chat` response shape, so decide it before 1.0. See the `public/sw.js`
+  note below — that file is the surviving half of an earlier streaming attempt.
 - **`@anthropic-ai/sdk` is a hard dependency**, so Ollama-only consumers still
   install it. Making it optional means a dynamic `import()` inside
   `src/providers/anthropic.ts` plus an `isAvailable()` that reports a missing
   module. Left simple on purpose.
-- **`public/sw.js`** is still in the repo and is not referenced by anything.
-  It is not published (`files` excludes it), but decide whether it should exist.
+- [ ] **`public/sw.js` — decide its fate (leftover from streaming).** It is a
+  service worker, and it is the surviving half of an earlier **streaming chat**
+  approach: a `.ts` file defined a Web Worker used for streaming, and a chat
+  component instantiated it as its worker. That component and the worker `.ts`
+  are gone; only this service worker remains, referenced by nothing and
+  registered by no one. It is not published (`files` excludes it). Two paths:
+  **(a)** delete it now — it is dead weight in the repo and misleads whoever
+  reads `public/` next; or **(b)** keep it as the seed for the streaming chapter
+  above and write down, here, what the removed worker did so it can be rebuilt.
+  Do not leave it as an unexplained orphan a third time.
 - **TypeScript 7 breaks Next 16's TS detection** — `npm i -D typescript` now
   resolves to 7, and Next reports TypeScript as missing when it is installed.
   The docs and CLI pin `typescript@^5`. Revisit when Next supports 7.
