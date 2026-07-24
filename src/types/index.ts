@@ -16,13 +16,33 @@ export type {
 export type { InstructionPreset, InstructionType } from './InstructionType.js';
 
 export type {
+  AnthropicTool,
+  DialectTool,
+  EndpointTool,
+  IngestedCall,
+  OllamaTool,
+  OpenAITool,
+  RawProviderCall,
+  SkillTool,
+  ToolInput,
+  ToolParameter,
+  ToolRecord,
+  ToolSpec,
+  ToolTrace,
+  ToolType,
+} from './ToolType.js';
+
+export type {
   AgentAction,
   IAction,
   IContext,
   IContextAction,
   IContextState,
   InstructionAction,
+  ToolAction,
 } from './ContextType.js';
+
+export type { ToolDialect, ValidationResult } from '../tools/dialects/types.js';
 
 export type {
   ChatProvider,

@@ -15,3 +15,9 @@
 
 export { default as ChatPage } from './ChatPage.js';
 export { default as McpPromptPage } from './McpPromptPage.js';
+
+/* tools chapter — four NEW pages. `/` and `/chat` above are unchanged. */
+export { default as AddToolPage } from './AddToolPage.js';
+export { default as McpDashboardPage } from './McpDashboardPage.js';
+export { default as PersonalChatPage } from './PersonalChatPage.js';
+export { default as SmartChatPage } from './SmartChatPage.js';

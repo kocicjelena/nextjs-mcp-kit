@@ -1,9 +1,34 @@
 # CONTINUE — state of play and what comes next
 
-Last updated: 2026-07-22. Read `CLAUDE.md` first for the architecture and the
+Last updated: 2026-07-24. Read `CLAUDE.md` first for the architecture and the
 non-negotiables, and `docs/PUBLISH.md` for shipping.
 
 **Resume with:** `claude --continue`
+
+---
+
+## 2026-07-24 — the tools chapter is BUILT and waiting to be tested
+
+All six stages of `docs/PLAN_NOT_CHEAP.md` are done and `npm run verify` is
+green. What was actually built, stage by stage, is in **`docs/DONE.md`**.
+
+**Nothing is published.** The version is still `0.2.0` on purpose. The order
+agreed, and it is not negotiable: **build → `npm run verify` → Jelena tests it
+herself → patch what she finds → publish `0.3.0`.**
+
+New surfaces, all additive — `/`, `/chat` and their files have zero changed
+lines:
+
+| | |
+|---|---|
+| `/add-tool` | make a tool by form, by `.md`/`.txt` upload, or from a skill |
+| `/mcp-dashboard` | what the MCP server serves + the `mcp.json` to copy |
+| `/personal-chat` | instructions, tools, streamed reply, named trace |
+| `/smart-chat` | does a tool fit this prompt? watch it decide |
+| `POST /api/agent-chat` | one turn with tools; NDJSON when `stream: true` |
+| `GET /api/tools` | the registry (POST, DELETE) |
+| `POST /api/tools/upload` | document → skill tool |
+| `GET /api/mcpserver/tools` | the tool catalogue |
 
 ---
 
@@ -78,6 +103,16 @@ never *missing*. This is written up in `docs/PUBLISH.md` §5b.
 - [ ] **Exercise Claude against the live API.** Never done — see "Also
       outstanding" below. Needs a key in `.env.local`, then one real turn on
       `/chat`. This is the highest-value item on the list.
+- [ ] **Ask in the console — do not assume.** The decisions behind
+      `docs/PLAN.md` (the tools chapter) were **asked and answered in the
+      console**, not inferred: a JSON file store rather than sqlite (deferred
+      for complexity), ownership by anonymous session cookie rather than auth,
+      `.md`/`.txt` uploads only so no new dependency is added, MCP tool
+      registration driven from the app rather than read from the store, and four
+      **new** pages rather than any change to `/` or `/chat`. The questions still
+      open are listed at the bottom of `docs/PLAN.md` and get asked the same way
+      — in the console, before the code — rather than decided quietly. This is
+      the working rule for this repository, not a one-off.
 
 ### How to push, and how to release
 
@@ -176,8 +211,21 @@ pulled locally is unknowable, so the picker must never assume a tag exists.
 
 ## Next: tools
 
-Not started. The rule from `CLAUDE.md` still holds: **tool calling wraps
-`/api/chat`, it does not complicate it.**
+**Planned. See `docs/PLAN_NOT_CHEAP.md`** — that is the agreed plan for this
+chapter, written 2026-07-24. `docs/PLAN.md` is the earlier revision, kept
+because Jelena's corrections are written into it and those corrections are what
+produced the current plan. Neither file ships (`files` is
+`["dist", "cli", "README.md", "LICENSE"]`).
+
+One correction to the sentence below, made in the plan: tool calling does **not**
+wrap `/api/chat`. It gets its own route, `/api/agent-chat`, calling the provider
+registry directly. `/api/chat` is not called, not imported and not edited — the
+"wrap it" idea was rejected in review as messing with a working chat.
+
+The numbered sketch that follows is the original thinking, kept for context. The
+plan supersedes it where they disagree — notably the store-backed skill folders
+in "Next: skills → tools" below, which are retired: a skill's body is a field on
+a tool record, never a file written into a consuming app.
 
 Suggested shape, consistent with what is already here:
 
@@ -236,6 +284,28 @@ Design notes before writing any of it:
   `PROMPT_SPECS` means one registry and no drift, which is the pattern this
   codebase now enforces. **Confirm the approach before committing to it.**
 
+## Postponed to a later session — decided 2026-07-24
+
+Deliberately **not** part of the tools chapter. Both are additions beside what
+gets built, never replacements, and neither blocks `0.3.0`.
+
+- **`stdchat`.** Reference: `~/internal-AI-workloads-nextjs/app/api/stdchat/route.ts`
+  — a server-side `TransformStream` that pipes an Ollama stream straight out as
+  `text/plain`. Thirty lines, and useful precisely because it is the smallest
+  streaming thing that works. It arrives beside `/api/agent-chat`, not instead
+  of it.
+- **The console MCP scripts.** Reference: **`~/ollama13jul/scripts`** —
+  `mcp-stdio.ts`, `test-client.mjs`, `test-stdio.mjs`,
+  `test-streamable-http-client.mjs`. **This was the first flow that worked, end
+  to end, from the console, and it is why this kit exists at all.** It comes
+  back as scripts pointed at this app's own MCP server — in honour of that first
+  success, and because a console client is the most honest test the server can
+  have: no browser, no context, nothing helping it. It is also the natural home
+  for the catalogue-vs-served assertion listed under "No tests" below.
+- **Publishing.** Postponed with them. `0.3.0` goes out only after Jelena has
+  run and tested the built code herself. Order, not negotiable:
+  **build → `npm run verify` → she tests → patch → publish.**
+
 ## Also outstanding
 
 - **Claude is still unverified against the live API.** No `ANTHROPIC_API_KEY`
@@ -247,14 +317,24 @@ Design notes before writing any of it:
   install in `docs/PUBLISH.md` §4. The highest-value first test is the
   catalogue-vs-served-prompts assertion — that is the bug that shipped. Now
   that CI exists, a test file would actually run on every push.
-- **No streaming.** Responses arrive whole. Streaming would change the
-  `/api/chat` response shape, so decide it before 1.0.
+- **Streaming exists now, on `/api/agent-chat` only** (2026-07-24). `/api/chat`
+  still returns whole responses and its shape is unchanged — that was the point
+  of giving tools their own route rather than complicating the existing one.
+  Whether `/chat` should also stream is still open, and it is still a decision
+  to make before 1.0.
+- **The Web Worker is opt-in, not the default.** `src/client/streamChat.ts`
+  ships as the default because `new Worker(new URL(...))` resolved from inside
+  `node_modules` is a bundler gamble in a published package.
+  `src/client/streamWorker.ts` speaks the identical protocol for anyone who
+  wants it off the main thread. Swapping which is default is a one-line change
+  in the components.
 - **`@anthropic-ai/sdk` is a hard dependency**, so Ollama-only consumers still
   install it. Making it optional means a dynamic `import()` inside
   `src/providers/anthropic.ts` plus an `isAvailable()` that reports a missing
   module. Left simple on purpose.
-- **`public/sw.js`** is still in the repo and is not referenced by anything.
-  It is not published (`files` excludes it), but decide whether it should exist.
+- ~~**`public/sw.js`**~~ — **deleted 2026-07-24** (`git rm -f public/sw.js`).
+  Tracked, referenced by nothing, registered by no one, and named in
+  `docs/MY_PROMPT_INSTRUCTIONS.md` as interfering with Next.
 - **TypeScript 7 breaks Next 16's TS detection** — `npm i -D typescript` now
   resolves to 7, and Next reports TypeScript as missing when it is installed.
   The docs and CLI pin `typescript@^5`. Revisit when Next supports 7.

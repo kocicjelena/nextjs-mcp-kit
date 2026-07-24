@@ -20,33 +20,43 @@ import type {
 } from '../types/ContextType.js';
 import type { ChatTurn, ProviderId } from '../types/AgentType.js';
 import type { InstructionPreset } from '../types/InstructionType.js';
+import type { ToolInput, ToolRecord, ToolTrace } from '../types/ToolType.js';
 
 import { agentReducer, initialAgent } from '../reducers/AgentReducer.js';
 import { initialInstruction, instructionReducer } from '../reducers/InstructionReducer.js';
+import { initialTool, toolReducer } from '../reducers/ToolReducer.js';
 
 import { getProviders, postChat } from '../client/chatAPI.js';
 import { getInstructions, postInstruction } from '../client/instructionAPI.js';
+import { deleteTool as deleteToolRequest, getTools, postTool } from '../client/toolAPI.js';
+import { DIALECTS, toSpec, validateFor } from '../tools/dialects/index.js';
 
 /* ================================================================== */
 /* Root reducer                                                        */
 /* ================================================================== */
 //
-// Hand-rolled rather than pulled from a library: two slices do not justify a
+// Hand-rolled rather than pulled from a library: three slices do not justify a
 // dependency, and every action still reaches every slice — the behaviour the
 // distinct action-type prefixes in actionTypes.ts assume.
 
 const initialState: IContextState = {
   agent: initialAgent,
   instruction: initialInstruction,
+  tool: initialTool,
 };
 
 function rootReducer(state: IContextState, action: IAction): IContextState {
   const next: IContextState = {
     agent: agentReducer(state.agent, action as never),
     instruction: instructionReducer(state.instruction, action as never),
+    tool: toolReducer(state.tool, action as never),
   };
   // Preserve identity when nothing changed, so consumers do not re-render.
-  return next.agent === state.agent && next.instruction === state.instruction ? state : next;
+  return next.agent === state.agent &&
+    next.instruction === state.instruction &&
+    next.tool === state.tool
+    ? state
+    : next;
 }
 
 /* ================================================================== */
@@ -67,6 +77,13 @@ const defaultContext: IContext = {
     createInstruction: async () => null,
     selectInstruction: () => undefined,
     setSystemText: () => undefined,
+    loadTools: noop,
+    addTool: async () => null,
+    addToolOllama: async () => null,
+    addToolAnthropic: async () => null,
+    removeTool: noop,
+    setEnabledTools: () => undefined,
+    setToolTrace: () => undefined,
   },
 };
 
@@ -236,6 +253,102 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
     dispatch({ type: actionTypes.SET_SYSTEM_TEXT, payload: { systemText } } as IAction);
   }, []);
 
+  /* ---------------- tool ---------------- */
+
+  const loadTools = useCallback(async () => {
+    dispatch({ type: actionTypes.TOOL_SET_LOADING, payload: { isLoading: true } } as IAction);
+    try {
+      const data = await getTools();
+      dispatch({ type: actionTypes.TOOL_SET_ALL, payload: { tools: data.tools ?? [] } } as IAction);
+    } catch (error) {
+      dispatch({
+        type: actionTypes.TOOL_SET_ERROR,
+        payload: { error: error instanceof Error ? error.message : String(error) },
+      } as IAction);
+    }
+  }, []);
+
+  /**
+   * Add a tool.
+   *
+   * It is validated against EVERY dialect, not only the named provider's —
+   * because the tool is stored once and then handed to Claude, to Ollama and to
+   * any MCP client that connects. One record has to satisfy all of them, and
+   * the server checks the same way; validating against one provider here would
+   * mean the browser said yes and the save said no.
+   *
+   * What `providerId` buys is the ORDER of the checking, so the provider you
+   * are actually looking at gets to object first and its message is the one you
+   * see. In practice only the tool NAME differs between them — Claude restricts
+   * it, Ollama does not.
+   */
+  const addToolFor = useCallback(
+    async (providerId: string, input: ToolInput): Promise<ToolRecord | null> => {
+      const spec = toSpec(input as ToolRecord);
+      const order = [providerId, ...Object.keys(DIALECTS).filter((id) => id !== providerId)];
+
+      for (const id of order) {
+        const check = validateFor(id, spec);
+        if (!check.ok) {
+          // Caught in the browser, before the round trip — so the user is told
+          // what is wrong with the tool rather than what an API said about it.
+          dispatch({ type: actionTypes.TOOL_SET_ERROR, payload: { error: check.reason } } as IAction);
+          return null;
+        }
+      }
+
+      dispatch({ type: actionTypes.TOOL_SET_LOADING, payload: { isLoading: true } } as IAction);
+      try {
+        const data = await postTool(input);
+        dispatch({ type: actionTypes.TOOL_ADD, payload: { tool: data.tool } } as IAction);
+        return data.tool;
+      } catch (error) {
+        dispatch({
+          type: actionTypes.TOOL_SET_ERROR,
+          payload: { error: error instanceof Error ? error.message : String(error) },
+        } as IAction);
+        return null;
+      }
+    },
+    [],
+  );
+
+  const addToolOllama = useCallback(
+    (input: ToolInput) => addToolFor('ollama', input),
+    [addToolFor],
+  );
+
+  const addToolAnthropic = useCallback(
+    (input: ToolInput) => addToolFor('anthropic', input),
+    [addToolFor],
+  );
+
+  /** Checks which provider is selected and hands off to the matching one. */
+  const addTool = useCallback(
+    (input: ToolInput) => addToolFor(stateRef.current.agent.provider, input),
+    [addToolFor],
+  );
+
+  const removeTool = useCallback(async (name: string) => {
+    try {
+      await deleteToolRequest(name);
+      dispatch({ type: actionTypes.TOOL_REMOVE, payload: { name } } as IAction);
+    } catch (error) {
+      dispatch({
+        type: actionTypes.TOOL_SET_ERROR,
+        payload: { error: error instanceof Error ? error.message : String(error) },
+      } as IAction);
+    }
+  }, []);
+
+  const setEnabledTools = useCallback((enabled: string[]) => {
+    dispatch({ type: actionTypes.TOOL_SET_ENABLED, payload: { enabled } } as IAction);
+  }, []);
+
+  const setToolTrace = useCallback((trace: ToolTrace[]) => {
+    dispatch({ type: actionTypes.TOOL_SET_TRACE, payload: { trace } } as IAction);
+  }, []);
+
   /* ---------------- value ---------------- */
 
   const actions = useMemo<IContextAction>(
@@ -249,6 +362,13 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
       createInstruction,
       selectInstruction,
       setSystemText,
+      loadTools,
+      addTool,
+      addToolOllama,
+      addToolAnthropic,
+      removeTool,
+      setEnabledTools,
+      setToolTrace,
     }),
     [
       loadProviders,
@@ -260,6 +380,13 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
       createInstruction,
       selectInstruction,
       setSystemText,
+      loadTools,
+      addTool,
+      addToolOllama,
+      addToolAnthropic,
+      removeTool,
+      setEnabledTools,
+      setToolTrace,
     ],
   );
 

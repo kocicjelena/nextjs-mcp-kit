@@ -78,6 +78,14 @@
       "types": "./dist/store/instructions.d.ts",
       "default": "./dist/store/instructions.js"
     },
+    "./store/tools": {
+      "types": "./dist/store/tools.d.ts",
+      "default": "./dist/store/tools.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/dialects/index.d.ts",
+      "default": "./dist/tools/dialects/index.js"
+    },
     "./api/chat": {
       "types": "./dist/api/chat.d.ts",
       "default": "./dist/api/chat.js"
@@ -90,6 +98,18 @@
       "types": "./dist/api/instructions.d.ts",
       "default": "./dist/api/instructions.js"
     },
+    "./api/tools": {
+      "types": "./dist/api/tools.d.ts",
+      "default": "./dist/api/tools.js"
+    },
+    "./api/tools-upload": {
+      "types": "./dist/api/tools-upload.d.ts",
+      "default": "./dist/api/tools-upload.js"
+    },
+    "./api/agent-chat": {
+      "types": "./dist/api/agent-chat.d.ts",
+      "default": "./dist/api/agent-chat.js"
+    },
     "./api/mcpserver": {
       "types": "./dist/api/mcpserver.d.ts",
       "default": "./dist/api/mcpserver.js"
@@ -97,6 +117,10 @@
     "./api/mcpserver-prompts": {
       "types": "./dist/api/mcpserver-prompts.d.ts",
       "default": "./dist/api/mcpserver-prompts.js"
+    },
+    "./api/mcpserver-tools": {
+      "types": "./dist/api/mcpserver-tools.d.ts",
+      "default": "./dist/api/mcpserver-tools.js"
     },
     "./api/mcpclient-prompt": {
       "types": "./dist/api/mcpclient-prompt.d.ts",

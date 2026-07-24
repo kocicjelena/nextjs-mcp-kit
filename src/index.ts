@@ -26,14 +26,29 @@ export { anthropicProvider } from './providers/anthropic.js';
 /* ---------- MCP ---------- */
 export { createMCPServer } from './mcp/server-factory.js';
 export { registerPrompts, getAvailablePrompts, PROMPTS } from './mcp/prompts.js';
+export { registerTool, registerTools, getAvailableTools } from './mcp/tools.js';
 export { mcpClientNew, DEFAULT_MCP_SERVER_PATH } from './mcp/client.js';
+export { ingestToolCalls } from './mcp/toolIngest.js';
+export { runTool, createToolRunner } from './mcp/toolRuntime.js';
+
+/* ---------- tools: one record, every dialect derived from it ---------- */
+export {
+  DIALECTS,
+  getDialect,
+  toSpec,
+  toolsForProvider,
+  deriveByProvider,
+  validateFor,
+} from './tools/dialects/index.js';
 
 /* ---------- persistence ---------- */
 export { loadInstructions, saveInstruction } from './store/instructions.js';
+export { loadTools, saveTool, deleteTool } from './store/tools.js';
 
 /* ---------- state ---------- */
 export { agentReducer, initialAgent } from './reducers/AgentReducer.js';
 export { instructionReducer, initialInstruction } from './reducers/InstructionReducer.js';
+export { toolReducer, initialTool } from './reducers/ToolReducer.js';
 export { default as actionTypes } from './types/actionTypes.js';
 
 /* ---------- types ---------- */

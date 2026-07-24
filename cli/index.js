@@ -52,12 +52,33 @@ export const runtime = 'nodejs';
 export const runtime = 'nodejs';
 `,
 
+  'app/api/tools/route.ts': `export { GET, POST, DELETE } from '${PKG}/api/tools';
+
+export const runtime = 'nodejs';
+`,
+
+  'app/api/tools/upload/route.ts': `export { POST } from '${PKG}/api/tools-upload';
+
+export const runtime = 'nodejs';
+`,
+
+  'app/api/agent-chat/route.ts': `export { POST } from '${PKG}/api/agent-chat';
+
+export const runtime = 'nodejs';
+export const maxDuration = 120;
+`,
+
   'app/api/mcpclient-prompt/route.ts': `export { GET, POST } from '${PKG}/api/mcpclient-prompt';
 
 export const runtime = 'nodejs';
 `,
 
   'app/api/mcpserver/prompts/route.ts': `export { GET } from '${PKG}/api/mcpserver-prompts';
+
+export const runtime = 'nodejs';
+`,
+
+  'app/api/mcpserver/tools/route.ts': `export { GET } from '${PKG}/api/mcpserver-tools';
 
 export const runtime = 'nodejs';
 `,
@@ -73,6 +94,18 @@ export const maxDuration = 60;
 
 const PAGES = {
   'app/chat/page.tsx': `export { ChatPage as default } from '${PKG}/pages';
+`,
+
+  'app/add-tool/page.tsx': `export { AddToolPage as default } from '${PKG}/pages';
+`,
+
+  'app/mcp-dashboard/page.tsx': `export { McpDashboardPage as default } from '${PKG}/pages';
+`,
+
+  'app/personal-chat/page.tsx': `export { PersonalChatPage as default } from '${PKG}/pages';
+`,
+
+  'app/smart-chat/page.tsx': `export { SmartChatPage as default } from '${PKG}/pages';
 `,
 };
 
@@ -333,8 +366,11 @@ async function init({ dir, force }) {
   console.log('    POST /api/chat                  one endpoint, every provider');
   console.log('    GET  /api/providers             availability + models');
   console.log('    GET  /api/instructions          presets (POST to save)');
+  console.log('    GET  /api/tools                 tool registry (POST / DELETE)');
+  console.log('    POST /api/agent-chat            one turn, with tools');
   console.log('    ALL  /api/mcpserver/mcp         this app\'s MCP server');
   console.log('    GET  /api/mcpserver/prompts     prompt catalogue');
+  console.log('    GET  /api/mcpserver/tools       tool catalogue');
   console.log('    GET  /api/mcpclient-prompt      list / fill prompts');
   console.log('');
 }

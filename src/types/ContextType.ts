@@ -16,12 +16,14 @@ import type {
   RoutingInfo,
 } from './AgentType.js';
 import type { InstructionPreset, InstructionType } from './InstructionType.js';
+import type { ToolInput, ToolRecord, ToolTrace, ToolType } from './ToolType.js';
 
 /* ---------- root ---------- */
 
 export interface IContextState {
   agent: AgentType;
   instruction: InstructionType;
+  tool: ToolType;
 }
 
 export interface IContextAction {
@@ -40,6 +42,22 @@ export interface IContextAction {
   }) => Promise<InstructionPreset | null>;
   selectInstruction: (id: string) => void;
   setSystemText: (text: string) => void;
+
+  /* tool */
+  loadTools: () => Promise<void>;
+  /**
+   * Add a tool using the SELECTED provider's dialect.
+   *
+   * Reads state.agent.provider and hands off to addToolOllama /
+   * addToolAnthropic. One tool record is stored either way — the provider
+   * decides which rules it is validated against, not where it is kept.
+   */
+  addTool: (input: ToolInput) => Promise<ToolRecord | null>;
+  addToolOllama: (input: ToolInput) => Promise<ToolRecord | null>;
+  addToolAnthropic: (input: ToolInput) => Promise<ToolRecord | null>;
+  removeTool: (name: string) => Promise<void>;
+  setEnabledTools: (names: string[]) => void;
+  setToolTrace: (trace: ToolTrace[]) => void;
 }
 
 export interface IContext {
@@ -70,7 +88,16 @@ export type InstructionAction =
   | { type: 'SET_INSTRUCTION_LOADING'; payload: { isLoading: boolean } }
   | { type: 'SET_INSTRUCTION_ERROR'; payload: { error: string } };
 
-/** Anything the root reducer may receive. */
-export type IAction = AgentAction | InstructionAction;
+export type ToolAction =
+  | { type: 'TOOL_SET_ALL'; payload: { tools: ToolRecord[] } }
+  | { type: 'TOOL_ADD'; payload: { tool: ToolRecord } }
+  | { type: 'TOOL_REMOVE'; payload: { name: string } }
+  | { type: 'TOOL_SET_ENABLED'; payload: { enabled: string[] } }
+  | { type: 'TOOL_SET_TRACE'; payload: { trace: ToolTrace[] } }
+  | { type: 'TOOL_SET_LOADING'; payload: { isLoading: boolean } }
+  | { type: 'TOOL_SET_ERROR'; payload: { error: string } };
 
-export type { AgentType, InstructionType, InstructionPreset, ChatTurn, ProviderId, ProviderInfo, ProviderModel, RoutingInfo };
+/** Anything the root reducer may receive. */
+export type IAction = AgentAction | InstructionAction | ToolAction;
+
+export type { AgentType, InstructionType, InstructionPreset, ChatTurn, ProviderId, ProviderInfo, ProviderModel, RoutingInfo, ToolType, ToolRecord, ToolInput, ToolTrace };

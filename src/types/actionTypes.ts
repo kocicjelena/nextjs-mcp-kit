@@ -5,7 +5,7 @@
 //
 // Every dispatched action reaches every slice reducer, so a constant must never
 // be shared by two slices. Keep the prefixes distinct: AGENT_* / SET_AGENT_* for
-// the conversation, *_INSTRUCTION* for the instruction presets.
+// the conversation, *_INSTRUCTION* for the instruction presets, TOOL_* for tools.
 
 interface ATypes {
   // agent — provider, model, conversation
@@ -28,6 +28,15 @@ interface ATypes {
   SET_SYSTEM_TEXT: string;
   SET_INSTRUCTION_LOADING: string;
   SET_INSTRUCTION_ERROR: string;
+
+  // tool — the registry, its derived per-provider views, and what ran
+  TOOL_SET_ALL: string;
+  TOOL_ADD: string;
+  TOOL_REMOVE: string;
+  TOOL_SET_ENABLED: string;
+  TOOL_SET_TRACE: string;
+  TOOL_SET_LOADING: string;
+  TOOL_SET_ERROR: string;
 }
 
 const actionTypes: ATypes = {
@@ -49,6 +58,14 @@ const actionTypes: ATypes = {
   SET_SYSTEM_TEXT: 'SET_SYSTEM_TEXT',
   SET_INSTRUCTION_LOADING: 'SET_INSTRUCTION_LOADING',
   SET_INSTRUCTION_ERROR: 'SET_INSTRUCTION_ERROR',
+
+  TOOL_SET_ALL: 'TOOL_SET_ALL',
+  TOOL_ADD: 'TOOL_ADD',
+  TOOL_REMOVE: 'TOOL_REMOVE',
+  TOOL_SET_ENABLED: 'TOOL_SET_ENABLED',
+  TOOL_SET_TRACE: 'TOOL_SET_TRACE',
+  TOOL_SET_LOADING: 'TOOL_SET_LOADING',
+  TOOL_SET_ERROR: 'TOOL_SET_ERROR',
 };
 
 export default actionTypes;
