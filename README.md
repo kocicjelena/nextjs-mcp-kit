@@ -1,4 +1,4 @@
-<img width="1773" height="1011" alt="nextjs-mcp-architecture" src="https://github.com/user-attachments/assets/5a238cda-bbb4-43d6-b2e0-6c91b01965ce" />
+
 # nextjs-mcp-kit
 
 An MCP server, an MCP client, and a provider-agnostic chat UI for Next.js
@@ -397,7 +397,7 @@ arguments that arrived as a JSON string. After ingest the two providers are
 indistinguishable, and each still returns results the way its own API demands.
 
 ---
-
+<img width="1773" height="1011" alt="nextjs-mcp-architecture" src="https://github.com/user-attachments/assets/5a238cda-bbb4-43d6-b2e0-6c91b01965ce" />
 ## Exports
 
 | Subpath | Contents |
