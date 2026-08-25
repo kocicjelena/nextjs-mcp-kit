@@ -6,7 +6,7 @@ App Router — as route handlers, components, and typed state you can install.
 
 **Give your app a small chat that actually knows things about your app.**
 
-Smart chat — responses are ones you wrote, uploaded documents by you,<img width="1773" height="1011" alt="nextjs-mcp-architecture" src="https://github.com/user-attachments/assets/d7ce5a51-fa57-4ebf-a451-d5be7d23fbe6" />
+Smart chat — responses are ones you wrote, uploaded documents by you,
  etc,
 You add the answers from a form in the browser.
 No retraining, no vector database, no redeploy.
