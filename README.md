@@ -548,7 +548,20 @@ and React 19.2.
 
 ---
 
-## A note to whoever installs this
+## A note 
+
+The nextjs-mcp-kit architecture implements a strict boundary separating 
+public client-side components from secure server-side execution. 
+The React-based client layer coordinates interactive states and 
+chat interfaces but operates completely blind to sensitive 
+environment variables or third-party credentials. Security is maintained 
+because all API keys, local tool executions, and direct LLM calls reside 
+exclusively behind Next.js Route Handlers in a secure Node.js runtime. 
+Communication between these boundaries is structured around standard 
+HTTP POST actions for user-initiated events and Server-Sent Events (SSE)
+for unidirectional real-time data streaming. This setup ensures that complex,
+multi-agent workflows remain highly responsive while adhering 
+to strict modern enterprise security guidelines.
 
 The nextjs-mcp-kit architecture implements a strict boundary separating 
 public client-side components from secure server-side execution. 
