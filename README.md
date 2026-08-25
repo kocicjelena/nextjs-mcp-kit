@@ -1,11 +1,13 @@
+<img width="1773" height="1011" alt="nextjs-mcp-architecture" src="https://github.com/user-attachments/assets/5a238cda-bbb4-43d6-b2e0-6c91b01965ce" />
 # nextjs-mcp-kit
 
-An MCP server, an MCP client, and a provider-agnostic chat UI for the Next.js
-App Router — as route handlers, components and typed state you can install.
+An MCP server, an MCP client, and a provider-agnostic chat UI for Next.js
+App Router — as route handlers, components, and typed state you can install.
 
 **Give your app a small chat that actually knows things about your app.**
 
-smart chat — response is one you wrote, uploaded document by you and etc,
+Smart chat — responses are ones you wrote, uploaded documents by you,<img width="1773" height="1011" alt="nextjs-mcp-architecture" src="https://github.com/user-attachments/assets/d7ce5a51-fa57-4ebf-a451-d5be7d23fbe6" />
+ etc,
 You add the answers from a form in the browser.
 No retraining, no vector database, no redeploy.
 
