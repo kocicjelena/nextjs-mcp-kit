@@ -5,10 +5,8 @@ App Router — as route handlers, components and typed state you can install.
 
 **Give your app a small chat that actually knows things about your app.**
 
-Not a general-purpose assistant — something smaller and more useful than that.
-A visitor lands on your site and asks *"when are you open?"*, *"how do refunds
-work?"*, *"do you ship to Ireland?"* — and gets your answer, the one you wrote,
-not a plausible-sounding guess. You add the answers from a form in the browser.
+smart chat — response is one you wrote, uploaded document by you and etc,
+You add the answers from a form in the browser.
 No retraining, no vector database, no redeploy.
 
 It is deliberately not clever. It is the little chat that says hello and knows
@@ -549,6 +547,19 @@ and React 19.2.
 ---
 
 ## A note to whoever installs this
+
+The nextjs-mcp-kit architecture implements a strict boundary separating 
+public client-side components from secure server-side execution. 
+The React-based client layer coordinates interactive states and 
+chat interfaces but operates completely blind to sensitive 
+environment variables or third-party credentials. Security is maintained 
+because all API keys, local tool executions, and direct LLM calls reside 
+exclusively behind Next.js Route Handlers in a secure Node.js runtime. 
+Communication between these boundaries is structured around standard 
+HTTP POST actions for user-initiated events and Server-Sent Events (SSE)
+ for unidirectional real-time data streaming. This setup ensures that complex,
+  multi-agent workflows remain highly responsive while adhering 
+  to strict modern enterprise security guidelines.
 
 The interesting part of this package is how little of your time it asks for.
 
