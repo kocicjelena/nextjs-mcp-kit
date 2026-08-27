@@ -6,9 +6,9 @@ App Router — as route handlers, components, and typed state you can install.
 
 **Give your app a small chat that actually knows things about your app.**
 
-Smart chat — responses are ones you wrote, uploaded documents by you,
- etc,
-You add the answers from a form in the browser.
+Smart chat — responses are ones you wrote, uploaded documents by you
+  - the tools you add
+You add the answers from a form in the browser to make the tool.
 No retraining, no vector database, no redeploy.
 
 It is deliberately not clever. It is the little chat that says hello and knows
@@ -16,7 +16,12 @@ your opening hours, and it takes about a minute to have one.
 
 ```bash
 npm i nextjs-mcp-kit && npx nextjs-mcp-kit init
+
 ```
+## nextjs-mcp-kit — scaffolder options
+npx nextjs-mcp-kit init            scaffold into the current directory
+npx nextjs-mcp-kit init --force    overwrite files that already exist
+npx nextjs-mcp-kit init --dir web  scaffold into ./web
 
 Then jump to [Your first tool, in 60 seconds](#your-first-tool-in-60-seconds).
 
@@ -123,7 +128,7 @@ Neither has any auth — put them behind your own, or do not scaffold them into
 the public app at all.
 
 Works with **Ollama** (local, free) and **Claude** (Anthropic). Adding a third
-provider is one file and one array entry.
+Provider is one file and one array entry.
 
 ---
 
@@ -185,7 +190,7 @@ thumb: **if it renders, it is not at the root.**
 Fixing the import is necessary but not sufficient: `AgentChat` needs
 `/api/providers`, `/api/chat` and `/api/instructions` to exist in your app, and
 `GlobalProvider` above it. `npx nextjs-mcp-kit init` writes the routes; the
-layout is yours. A complete worked app — plus a troubleshooting list in the
+layout is yours. A complete working app — plus a troubleshooting list in the
 order things actually break — is on the [`examples` branch](https://github.com/kocicjelena/nextjs-mcp-kit/tree/examples/example).
 
 ### Standalone, from an empty directory
@@ -221,7 +226,7 @@ picker shows Claude as unavailable *with the reason*, and Ollama still works.
 That is the point of `isAvailable()` — a missing key is a normal state reported
 up front, not an exception thrown when you press Send.
 
-On serverless hosts set `NEXTJS_MCP_DATA_DIR=/tmp/nextjs-mcp-kit`; their bundle
+On serverless hosts, set `NEXTJS_MCP_DATA_DIR=/tmp/nextjs-mcp-kit`; their bundle
 filesystem is read-only apart from `/tmp`. See [Persistence](#persistence).
 
 ---
