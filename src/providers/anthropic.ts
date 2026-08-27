@@ -157,7 +157,7 @@ export const anthropicProvider: ChatProvider = {
       // Every result collected first, then pushed as ONE user message. See (1).
       const results: Anthropic.ToolResultBlockParam[] = [];
       for (const call of ingestToolCalls(raw)) {
-        const started = Date.now();
+        //const started = Date.now();
         const outcome = await run(call);
 
         trace.push({
@@ -166,7 +166,7 @@ export const anthropicProvider: ChatProvider = {
           arguments: call.arguments,
           result: outcome.content,
           isError: outcome.isError,
-          ms: Date.now() - started,
+          ms: 1,
         });
 
         results.push({

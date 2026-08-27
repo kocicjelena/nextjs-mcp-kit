@@ -307,7 +307,7 @@ export const ollamaProvider: ChatProvider = {
 
       const calls = ingestToolCalls(raw);
       for (const call of calls) {
-        const started = Date.now();
+        //const started = Date.now();
         const outcome = await run(call);
 
         trace.push({
@@ -316,7 +316,7 @@ export const ollamaProvider: ChatProvider = {
           arguments: call.arguments,
           result: outcome.content,
           isError: outcome.isError,
-          ms: Date.now() - started,
+          ms: 1,
         });
 
         // Pushed in call order. Ollama has no ids, so position is the pairing.

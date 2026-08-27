@@ -91,6 +91,7 @@ export default function SmartChat() {
   const matched = (withTools?.trace.length ?? 0) > 0;
 
   return (
+    <>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 760 }}>
       <div style={panel}>
         <ProviderModelPicker />
@@ -186,5 +187,6 @@ export default function SmartChat() {
         </div>
       ) : null}
     </div>
+    </>
   );
 }

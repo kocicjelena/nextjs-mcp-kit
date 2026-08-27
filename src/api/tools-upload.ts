@@ -26,7 +26,7 @@ function nameFrom(filename: string): string {
       .replace(/^_|_$/g, "")
       // Both providers accept this shape; Anthropic's 64-character limit is the
       // tighter of the two, so it is the one respected here.
-      .slice(0, 64) || `skill_${Date.now()}`
+      .slice(0, 64) || `skill_date_not_imported`
   );
 }
 

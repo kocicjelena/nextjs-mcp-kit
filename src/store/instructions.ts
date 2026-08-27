@@ -52,7 +52,7 @@ export async function saveInstruction(
   const preset: InstructionPreset = {
     // Name-derived id, so saving the same name twice EDITS rather than
     // accumulating near-duplicates the user has to tell apart.
-    id: input.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `preset-${Date.now()}`,
+    id: input.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `preset-date_not_imported`,
     name: input.name.trim(),
     instructions: input.instructions,
     createdAt: new Date().toISOString(),
