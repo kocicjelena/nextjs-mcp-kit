@@ -19,9 +19,12 @@ npm i nextjs-mcp-kit && npx nextjs-mcp-kit init
 
 ```
 ## nextjs-mcp-kit — scaffolder options
-npx nextjs-mcp-kit init            scaffold into the current directory
-npx nextjs-mcp-kit init --force    overwrite files that already exist
-npx nextjs-mcp-kit init --dir web  scaffold into ./web
+
+npx nextjs-mcp-kit init            // scaffold into the current directory
+
+npx nextjs-mcp-kit init --force    // overwrite files that already exist
+
+npx nextjs-mcp-kit init --dir web  // scaffold into ./web
 
 Then jump to [Your first tool, in 60 seconds](#your-first-tool-in-60-seconds).
 
