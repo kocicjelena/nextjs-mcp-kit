@@ -1,18 +1,15 @@
 
 # nextjs-mcp-kit
 
-An MCP server, an MCP client, and a provider-agnostic chat UI for Next.js
-App Router — as route handlers, components, and typed state you can install.
+An MCP server, an MCP client in Next.js with App Router 
+**Please follow Terminal during installation**
 
 **Give your app a small chat that actually knows things about your app.**
 
-Smart chat — responses are ones you wrote, uploaded documents by you
-  - the tools you add
+Smart chat - AI chat with the tools you add — responses are ones you wrote, or uploaded documents 
+  
 You add the answers from a form in the browser to make the tool.
 No retraining, no vector database, no redeploy.
-
-It is deliberately not clever. It is the little chat that says hello and knows
-your opening hours, and it takes about a minute to have one.
 
 ```bash
 npm i nextjs-mcp-kit && npx nextjs-mcp-kit init
@@ -20,11 +17,17 @@ npm i nextjs-mcp-kit && npx nextjs-mcp-kit init
 ```
 ## nextjs-mcp-kit — scaffolder options
 
+
+```bash
 npx nextjs-mcp-kit init            // scaffold into the current directory
 
 npx nextjs-mcp-kit init --force    // overwrite files that already exist
 
 npx nextjs-mcp-kit init --dir web  // scaffold into ./web
+
+```
+
+It is deliberately not clever. It is the little chat that says hello and knows your opening hours, and it takes about a minute to have one.
 
 Then jump to [Your first tool, in 60 seconds](#your-first-tool-in-60-seconds).
 
@@ -39,15 +42,13 @@ Six surfaces, deliberately separate:
 | `/personal-chat`  | **Chat with tools** — streamed, and it always names what ran                 |
 | `/smart-chat`     | **The visitor chat** — one question in, a grounded answer out                |
 
-Add a tool from the browser and it is usable in chat immediately — and served
-over MCP to anything pointed at your app, including someone else's client.
+Add a tool from the browser and it is usable in chat immediately — and served over MCP to anything pointed at your app, including someone else's client.
 
 ---
 
 ## Your first tool, in 60 seconds
 
-No API, no key, no code. Run `npm run dev`, open **`/add-tool`**, and leave the
-first option on **"Returns text I write"**:
+No API, no key, no code. Run `npm run dev`, open **`/add-tool`**, and leave the first option on **"Returns text I write"**:
 
 | Field | Type this |
 |---|---|
@@ -64,13 +65,11 @@ The model answers **"no — closed weekends"**, and underneath the answer it say
 `opening_hours` ran and shows exactly what the tool returned. It did not know
 that. You told it, thirty seconds ago, through a form.
 
-That is the whole loop. Everything else in this README is that loop with more
-choices.
+That is the whole loop. Everything else in this README is that loop with more choices.
 
 ### Why the description matters more than it looks
 
-The description is not documentation — it is **how the model decides whether to
-call the tool at all**. `"opening hours"` gets ignored half the time.
+The description is not documentation — it is **how the model decides whether to call the tool at all**. `"opening hours"` gets ignored half the time.
 `"The shop opening hours. Call this when asked when we are open."` gets called.
 A vague description means a tool that is registered and never chosen.
 
@@ -617,9 +616,6 @@ something with it, I would genuinely like to see it.
 This kit is a thin thing sitting on top of other people's substantial work.
 
 **[Ollama](https://ollama.com)** ❤️ — for making local models genuinely easy.
-No account, no key, no bill: pull a model and it answers. That is the entire
-reason `nextjs-mcp-kit` can be useful the moment you install it, and why the
-default provider is the local one.
 
 **[Claude](https://claude.com/claude) and [Anthropic](https://anthropic.com)** ❤️
 — for the models, and for the **[Model Context Protocol](https://modelcontextprotocol.io)**.
