@@ -1,2 +1,0 @@
-Built-in Schema MethodsFormat Parameter: Pass a raw JSON schema object or a JSON string directly into the format field of an API request or client call.Native Tool Definitions: Define JSON objects under the tools field in API requests to let models like Llama 3.1 or Qwen choose and structure function arguments.SDK Integration: Use updated Ollama Python and JavaScript libraries to parse schemas automatically from code structures.
-Please get familiar with https://docs.ollama.com/capabilities/tool-calling#javascript

@@ -1,0 +1,1 @@
+export { McpPromptPage as default } from '@/dist/views';

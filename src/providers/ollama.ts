@@ -3,7 +3,7 @@
 // Local models over Ollama's HTTP API. ❤️
 //
 // Ollama is why this kit can be useful with no account, no key and no bill —
-// you pull a model and it answers. That it exists, is free, and speaks plain
+// you pull a model and it answers. That it exists, and speaks plain
 // HTTP is the reason the local-first default in index.ts is possible at all.
 //
 // Plain fetch rather than the `ollama` npm client: the two calls needed here
@@ -26,7 +26,7 @@ import type {
 const DEFAULT_HOST = 'http://localhost:11434';
 
 function host(): string {
-  return (process.env.OLLAMA_API_URL || DEFAULT_HOST).replace(/\/+$/, '');
+  return (process.env.OLLAMA_API_URL || process.env.OLLAMA_HOST || DEFAULT_HOST).replace(/\/+$/, '');
 }
 
 async function ollamaFetch<T>(path: string, init?: RequestInit): Promise<T> {
@@ -180,11 +180,8 @@ async function chatOnce(
 
 export const ollamaProvider: ChatProvider = {
   id: 'ollama',
-  label: 'Ollama — local, private, free ❤️',
-  // Empty on purpose: whatever the user has pulled is the truth. The picker
-  // fills this from listModels(); guessing a tag that is not installed just
-  // produces a 404 at send time.
-  defaultModel: '',
+  label: 'Ollama — local, private ❤️',
+  defaultModel: 'llama3.1:8b',
   billed: false,
   dynamicModels: true,
 

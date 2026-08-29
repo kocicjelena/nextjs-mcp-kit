@@ -96,9 +96,7 @@ guessing which one you got.
 lacks the capability, you get a **503 with the reason** before the turn runs —
 never an answer that quietly ignored the tools you ticked.
 
-**Free to run.** Ollama is local, so a visitor chat costs nothing per message
-and no data leaves the machine. Switch to Claude for a better one with the same
-tools — the picker shows 💳 for a billed turn, 🖥️ for a local one.
+**Local or hosted.** Switch between local Ollama models and Claude — the picker shows 💳 for a billed turn, 🖥️ for a local one.
 
 **It is an MCP server too.** The same tools you added from the browser are
 served over MCP, so Claude Desktop — or anyone's client — can point at your
@@ -130,8 +128,8 @@ new tool before you let anyone else near it.
 Neither has any auth — put them behind your own, or do not scaffold them into
 the public app at all.
 
-Works with **Ollama** (local, free) and **Claude** (Anthropic). Adding a third
-Provider is one file and one array entry.
+Works with **Ollama** (local models) and **Claude** (Anthropic). Adding a third
+provider is one file and one array entry.
 
 ---
 
@@ -556,33 +554,28 @@ and React 19.2.
 
 ---
 
-## A note 
+## MCP Open Standard & Protocol Alignment
 
-The nextjs-mcp-kit architecture implements a strict boundary separating 
-public client-side components from secure server-side execution. 
-The React-based client layer coordinates interactive states and 
-chat interfaces but operates completely blind to sensitive 
-environment variables or third-party credentials. Security is maintained 
-because all API keys, local tool executions, and direct LLM calls reside 
-exclusively behind Next.js Route Handlers in a secure Node.js runtime. 
-Communication between these boundaries is structured around standard 
-HTTP POST actions for user-initiated events and Server-Sent Events (SSE)
-for unidirectional real-time data streaming. This setup ensures that complex,
-multi-agent workflows remain highly responsive while adhering 
-to strict modern enterprise security guidelines.
+This kit is built directly on the official **[Model Context Protocol (MCP)](https://modelcontextprotocol.io)** TypeScript SDK (`@modelcontextprotocol/sdk`).
 
-The nextjs-mcp-kit architecture implements a strict boundary separating 
-public client-side components from secure server-side execution. 
-The React-based client layer coordinates interactive states and 
-chat interfaces but operates completely blind to sensitive 
-environment variables or third-party credentials. Security is maintained 
-because all API keys, local tool executions, and direct LLM calls reside 
-exclusively behind Next.js Route Handlers in a secure Node.js runtime. 
-Communication between these boundaries is structured around standard 
-HTTP POST actions for user-initiated events and Server-Sent Events (SSE)
- for unidirectional real-time data streaming. This setup ensures that complex,
-  multi-agent workflows remain highly responsive while adhering 
-  to strict modern enterprise security guidelines.
+We aim to keep our protocol implementation clean, truthful, and faithful to the specification without artificial layers:
+
+- **Official SDK foundation**: Server and client instances are constructed directly using `@modelcontextprotocol/sdk/server` and `@modelcontextprotocol/sdk/client`.
+- **Bidirectional MCP support**:
+  - **MCP Server**: Exposes your registered tools and prompts over HTTP (`/api/mcpserver/mcp`) so external MCP hosts (like Claude Desktop, VS Code, or custom clients) can discover and call them.
+  - **MCP Client**: Internal MCP client implementations that connect directly to MCP endpoints to list and invoke prompts and tools dynamically.
+- **Strict schema validation**: Tool parameters and prompt arguments follow JSON Schema specifications. Argument validation errors return standard JSON-RPC protocol error structures rather than failing silently.
+- **Provider-agnostic tool execution**: The kit absorbs dialect discrepancies (Anthropic tool definitions vs. Ollama function schemas vs. OpenAI formats) without altering tool results or silently dropping parameters.
+- **Transport clarity**: We support HTTP/Streamable HTTP endpoints in Next.js App Router route handlers. (For stdio connections with host IDEs or CLI clients, stdout remains dedicated strictly to the protocol stream while diagnostic logging uses stderr/`console.error`).
+
+---
+
+## A note on architecture & security
+
+The `nextjs-mcp-kit` architecture maintains a clear separation between client-side UI components and server-side execution:
+- **Client layer**: React components manage interaction, streaming state, and parameter forms without access to secret keys or raw backend credentials.
+- **Server layer**: All external LLM requests, MCP protocol handling, and tool executions happen inside Next.js Route Handlers on the server.
+- **Communication**: Chat interactions use standard HTTP POST endpoints, with real-time streaming delivered via NDJSON streams.
 
 The interesting part of this package is how little of your time it asks for.
 
@@ -634,7 +627,7 @@ MCP is the thing the `/` route is built on, and it was given away as an open
 spec rather than kept as a moat. This package would not exist in this shape
 without it.
 
-Both providers are first-class here on purpose. One is local and free, one is
+Both providers are first-class here on purpose. One is local and private, one is
 hosted and excellent, and the provider seam exists so neither has to win.
 
 ## License

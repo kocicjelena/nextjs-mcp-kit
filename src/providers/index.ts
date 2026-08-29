@@ -12,7 +12,7 @@ import { anthropicProvider } from './anthropic.js';
 import { ollamaProvider } from './ollama.js';
 import type { ChatProvider } from './types.js';
 
-// Two providers, deliberately: one local and free, one hosted and excellent.
+// Two providers, deliberately: one local, one hosted and excellent.
 // Between them they cover the two ways people actually want to run a model,
 // and this kit is grateful for both. ❤️
 export const PROVIDERS: ChatProvider[] = [ollamaProvider, anthropicProvider];

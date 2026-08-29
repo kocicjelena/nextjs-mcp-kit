@@ -1,5 +1,5 @@
 # CONTINUE — state of play and what comes next
-
+Remember that you have to look at :~/npm-pnextjs-publish/main.json and :~/npm-pnextjs-publish/copy-assets.mjs and read tn order to conclude if you need that files.
 Last updated: 2026-07-24. Read `CLAUDE.md` first for the architecture and the
 non-negotiables, and `docs/PUBLISH.md` for shipping.
 
@@ -338,3 +338,87 @@ gets built, never replacements, and neither blocks `0.3.0`.
 - **TypeScript 7 breaks Next 16's TS detection** — `npm i -D typescript` now
   resolves to 7, and Next reports TypeScript as missing when it is installed.
   The docs and CLI pin `typescript@^5`. Revisit when Next supports 7.
+  jelena:
+model from Ollama to set to default llama3.1:8b
+user has to be instructed to follow steps to have ollama up and running n the port which is default for ollama and imported as env variables
+ollama to be installed (point to the installation instructions and pull the model)
+
+McpPromptChat is not in app after installing nextjs-mcp-kit 
+index page contains official page to deploy to vercel
+
+- image logo vercel has to be deleted from public folder
+
+
+- I tried to publish v0.3.1 and it was buggy warning about McpPromptChat
+I suppose I pushed what I was testing and probably that caused the problems.
+I depricacted that 0.3.1. with the note that v0.3.0 is to be used 
+When new version is published v0.4.0 I want to remove depricated warning from npm registry (I supose it will be cleaned and not visible after that v0.4.0 version is published and live)
+-second issue, very important and the first thing to do: Date() is causing hydratation errors and should not be in the code (that is right thin to to, that is changed and it is on github) I want to revert to last good version (two last pushs to github made the issues). I want to clone the repo as it was before two last push on github. I want to continue working from that clone.
+
+What I want to do acctualy is to polish npm registry to be in line with documents for mcp protocol:
+please continue reading todo_official.md
+What is done:
+app is importing MCP SDK
+@modelcontextprotocol/server: build MCP servers
+@modelcontextprotocol/client: build MCP clients
+reference https://github.com/modelcontextprotocol/typescript-sdk
+mcp server setup, register tools, server over stdio and http, running mcp server, calling the tool
+I want elaboration, few sentences in README.md and in MANUAL.md and showcase
+npx @modelcontextprotocol/inspector
+reference: 
+/home/jelena/Downloads/nextjs-mcp-main
+https://github.com/modelcontextprotocol/inspector
+1. Picking the transport
+this app server speaks stdio and I want elaboration, few sentences in README.md and in MANUAL.md and showcase. To host one endpoint that many clients connect to, serve the same createServer factory over HTTP instead. It is done too. What is missing partly is elaboration, few sentences in README.md and in MANUAL.md and showcase
+2.Plug into a real host
+::: warning stdout is the protocol channel. One console.log and the host drops the connection — log with console.error. :::
+
+Register the server in VS Code
+Create .vscode/mcp.json in the weather project root, with one stdio entry that holds the launch command.
+example is:
+{
+  "servers": {
+    "weather": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "src/index.ts"]
+    }
+  }
+}
+
+Testing which has to pass and that are the goal:
+Call the tool from Copilot Chat
+Open Copilot Chat (Ctrl+Alt+I / Ctrl+Cmd+I), switch the mode selector at the top of the panel to Agent — the only Copilot mode that calls tools — and ask about the one thing your server knows.
+The question has to be something known from my mcp server
+That one answer is six steps.
+elaboration:
+VS Code sends your question to the model, along with the name, description, and input schema of every available tool.
+The model decides get-alerts answers the question and emits a call with the arguments it chose.
+VS Code — the MCP client inside the host — sends a tools/call request to your server over stdio.
+The SDK validates the arguments against your inputSchema and runs your handler.
+The handler's content goes back over stdout as the tools/call result.
+The model reads the text block and writes the answer you see in the chat.
+Connect other hosts
+Every MCP host launches a stdio server from the same command and arguments. Only where you put them differs.
+second example:
+Claude Code
+Register the server from the project root; everything after -- is the launch command.
+
+claude mcp add "name of my mcp server" "command to run my mcp server"
+3. I want reference to what is done-elaboration as the proof, few sentences in README.md and in MANUAL.md and showcase (partly done)
+-Add a tool
+-Call it
+-Send arguments the schema rejects
+-Send arguments the schema rejects
+-Return other content types (running the tool resolve to: The blocks reach the client exactly as returned, and the embedded resource arrives without a resources/read round trip)
+-Annotate the tool
+
+4. publishing
+Publisher CLI Commands Reference
+ https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/cli/commands.md
+ reference
+ https://github.com/modelcontextprotocol/registry/tree/main
+ 
+ Please do not rewrite.
+ This is cloned github repo. The last two or three pushes are wrong. Please help me with that.Date.now() should not be in the code, as making hydratation errors. This app cloned has that fixed. There is no Date.now() anywhere, what it is good.
+ Any not Ollama free should be rewritten to Ollama. Ollama is not free completely and it is not truthfull. It should not be there as so.

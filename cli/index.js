@@ -320,6 +320,8 @@ async function init({ dir, force }) {
     await writeAll(root, STANDALONE_PAGES, force, log);
     await writeAll(root, STANDALONE_CONFIG, force, log);
     patched = await patchPackageJson(root, pkg);
+  } else if (pkg && pkg.type !== 'module') {
+    patched = await patchPackageJson(root, pkg);
   }
 
   for (const [result, rel] of log) {

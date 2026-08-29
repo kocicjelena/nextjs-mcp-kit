@@ -14,6 +14,7 @@ import McpPromptChat from '../components/McpPromptChat.js';
 
 export default function McpPromptPage() {
   return (
+    <>
     <main style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
       <h1 style={{ fontSize: 18, margin: 0 }}>MCP prompt chat</h1>
       <p
@@ -30,5 +31,6 @@ export default function McpPromptPage() {
       </p>
       <McpPromptChat />
     </main>
+    </>
   );
 }
