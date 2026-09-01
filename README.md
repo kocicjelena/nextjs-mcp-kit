@@ -1,13 +1,13 @@
 
 # nextjs-mcp-kit
 
-An MCP server, an MCP client in Next.js with App Router 
+An MCP server, an MCP client in Next.js with App Router
 **Please follow Terminal during installation**
 
 **Give your app a small chat that actually knows things about your app.**
 
-Smart chat - AI chat with the tools you add — responses are ones you wrote, or uploaded documents 
-  
+Smart chat - AI chat with the tools you add — responses are ones you wrote, or uploaded documents
+
 You add the answers from a form in the browser to make the tool.
 No retraining, no vector database, no redeploy.
 
@@ -410,7 +410,7 @@ indistinguishable, and each still returns results the way its own API demands.
 | `nextjs-mcp-kit` | providers, MCP server/client, store, reducers — **server-safe** |
 | `nextjs-mcp-kit/context` | `GlobalProvider`, `useContextState`, `useContextActions` |
 | `nextjs-mcp-kit/components` | `AgentChat`, `ProviderModelPicker`, `InstructionForm`, `McpPromptChat`, `PersonalChat`, `SmartChat`, `McpDashboard`, `ToolForm`, `ToolUploadForm`, `SkillToolForm`, `ToolChecklist`, `ToolTraceView` |
-| `nextjs-mcp-kit/pages` | `ChatPage`, `McpPromptPage`, `AddToolPage`, `McpDashboardPage`, `PersonalChatPage`, `SmartChatPage` |
+| `nextjs-mcp-kit/pages` | `HomePage`, `ChatPage`, `McpPromptPage`, `AddToolPage`, `McpDashboardPage`, `PersonalChatPage`, `SmartChatPage` |
 | `nextjs-mcp-kit/providers` | `PROVIDERS`, `getProvider`, `DEFAULT_PROVIDER_ID` |
 | `nextjs-mcp-kit/tools` | `DIALECTS`, `deriveByProvider`, `validateFor` |
 | `nextjs-mcp-kit/client` | typed fetch wrappers, `streamAgentChat`, `postAgentChat` |
@@ -563,7 +563,7 @@ We aim to keep our protocol implementation clean, truthful, and faithful to the 
 - **Bidirectional MCP support**:
   - **MCP Server**: Exposes your registered tools and prompts over HTTP (`/api/mcpserver/mcp`) so external MCP hosts (like Claude Desktop, VS Code, or custom clients) can discover and call them.
   - **MCP Client**: Internal MCP client implementations that connect directly to MCP endpoints to list and invoke prompts and tools dynamically.
-- **Strict schema validation**: Tool parameters and prompt arguments follow JSON Schema specifications. Argument validation errors return standard JSON-RPC protocol error structures rather than failing silently.
+- **Strict schema validation**: Tool parameters and prompt arguments follow JSON Schema specifications. Argument validation errors return standard JSON-RPC 2 protocol error structures rather than failing silently.
 - **Provider-agnostic tool execution**: The kit absorbs dialect discrepancies (Anthropic tool definitions vs. Ollama function schemas vs. OpenAI formats) without altering tool results or silently dropping parameters.
 - **Transport clarity**: We support HTTP/Streamable HTTP endpoints in Next.js App Router route handlers. (For stdio connections with host IDEs or CLI clients, stdout remains dedicated strictly to the protocol stream while diagnostic logging uses stderr/`console.error`).
 
@@ -625,6 +625,34 @@ without it.
 
 Both providers are first-class here on purpose. One is local and private, one is
 hosted and excellent, and the provider seam exists so neither has to win.
+
+## @modelcontextprotocol/inspector@2.4.0
+
+Server Implementation
+Name
+
+mcp-servers/everything
+
+Version
+
+2.0.0
+
+Protocol
+
+2025-11-25
+
+Transport
+
+streamable-http
+Era
+
+Legacy
+Session
+
+Session-based
+
+MCP focuses solely on the protocol for context exchange—
+nextjs-mcp-kit has context manager for AI
 
 ## License
 

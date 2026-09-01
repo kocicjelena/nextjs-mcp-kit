@@ -93,6 +93,9 @@ export const maxDuration = 60;
 };
 
 const PAGES = {
+  'app/prompt/page.tsx': `export { McpPromptPage as default } from '${PKG}/pages';
+`,
+
   'app/chat/page.tsx': `export { ChatPage as default } from '${PKG}/pages';
 `,
 
@@ -110,7 +113,7 @@ const PAGES = {
 };
 
 const STANDALONE_PAGES = {
-  'app/page.tsx': `export { McpPromptPage as default } from '${PKG}/pages';
+  'app/page.tsx': `export { HomePage as default } from '${PKG}/pages';
 `,
 
   'app/layout.tsx': `import type { Metadata } from 'next';
